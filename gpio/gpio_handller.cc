@@ -1,30 +1,24 @@
 #include <fcntl.h>
 #include <unistd.h>
+#include <iostream>
+#include <string>
 
-int main(){
-    int fd;
-
-    /* GPIO17の操作ファイル生成 */
-    fd = open("/sys/class/gpio/export", O_RDWR);
-    write(fd, "17", 2);
+void write_to(const std::string& path, const std::string& value) {
+    int fd = open(path.c_str(), O_WRONLY);
+    if (fd < 0) {
+        std::cerr << "Failed to open " << path << std::endl;
+        return;
+    }
+    write(fd, value.c_str(), value.size());
     close(fd);
+}
+
+int main() {
+    write_to("/sys/class/gpio/export", "17");
     sleep(1);
-
-    /* GPIO17を出力に変更 */
-    fd = open("/sys/class/gpio/gpio17/direction", O_RDWR);
-    write(fd, "out", 3);
-    close(fd);
-
-    /* GPIO17の出力をON */
-    fd = open("/sys/class/gpio/gpio17/value", O_RDWR);
-    write(fd, "1", 1);
-    close(fd);
+    write_to("/sys/class/gpio/gpio17/direction", "out");
+    write_to("/sys/class/gpio/gpio17/value", "1");
     sleep(2);
-
-    /* GPIO14の操作ファイル削除 */
-    fd = open("/sys/class/gpio/unexport", O_RDWR);
-    write(fd, "17", 2);
-    close(fd);
-
-    return(0);
+    write_to("/sys/class/gpio/unexport", "17");
+    return 0;
 }
