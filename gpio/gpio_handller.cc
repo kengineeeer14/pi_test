@@ -12,8 +12,9 @@ int main() {
     gpiod_line_request_output(line, "gpio_control", 0); // 初期値0 (OFF)
     for(size_t i{0}; i < 20; i++){
         gpiod_line_set_value(line, 1); // ON
-        sleep(2);
+        sleep(1);
         gpiod_line_set_value(line, 0); // OFF
+        sleep(1);
     }
 
     gpiod_line_release(line);
